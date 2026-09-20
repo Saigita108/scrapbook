@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import Plusbtn from '@/components/plus-content-btn';
 
 export default function TodayScreen() {
     const today = new Date();
@@ -14,6 +15,7 @@ export default function TodayScreen() {
             <View style={styles.scrapbook}>
                 <Text style={styles.title}>Today's scrapbook</Text>
             </View>
+            <Plusbtn />
         </View>
     );
 }
