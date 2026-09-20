@@ -5,35 +5,35 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export default function AddContentButton() {
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const menuItems = [
+        { label: 'Image', icon: 'image-outline' },
+        { label: 'Text', icon: 'text-outline' },
+        { label: 'Sticker', icon: 'happy-outline' },
+        { label: 'Audio', icon: 'mic-outline' },
+        { label: 'Video', icon: 'videocam-outline' },
+    ] as const;
+
     return (
         <View style={styles.wrapper}>
 
             {menuOpen && (
                 <View style={styles.menu}>
-                    <Pressable style={styles.menuItem}>
-                        <Ionicons name="image-outline" size={22} color="#000" />
-                        <Text style={styles.menuText}>Image</Text>
-                    </Pressable>
+                    {menuItems.map((item) => (
+                        <Pressable
+                            key={item.label}
+                            style={styles.menuItem}
+                        >
+                            <Ionicons
+                                name={item.icon}
+                                size={22}
+                                color="#000"
+                            />
 
-                    <Pressable style={styles.menuItem}>
-                        <Ionicons name="text-outline" size={22} color="#000" />
-                        <Text style={styles.menuText}>Text</Text>
-                    </Pressable>
-
-                    <Pressable style={styles.menuItem}>
-                        <Ionicons name="happy-outline" size={22} color="#000" />
-                        <Text style={styles.menuText}>Sticker</Text>
-                    </Pressable>
-
-                    <Pressable style={styles.menuItem}>
-                        <Ionicons name="mic-outline" size={22} color="#000" />
-                        <Text style={styles.menuText}>Audio</Text>
-                    </Pressable>
-
-                    <Pressable style={styles.menuItem}>
-                        <Ionicons name="videocam-outline" size={22} color="#000" />
-                        <Text style={styles.menuText}>Video</Text>
-                    </Pressable>
+                            <Text style={styles.menuText}>
+                                {item.label}
+                            </Text>
+                        </Pressable>
+                    ))}
                 </View>
             )}
 
