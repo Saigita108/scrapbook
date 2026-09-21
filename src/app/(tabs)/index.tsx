@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
-import Plusbtn from '@/components/plus-content-btn';
+import Plusbtn from '@/components/AddContentButton';
+import DraggableText from '@/components/DraggableText';
 
 type ScrapbookText = {
     id: string;
@@ -40,9 +41,10 @@ export default function TodayScreen() {
         >
             <View style={styles.container}>
                 {textElements.map((element) => (
-                    <Text key={element.id} style={styles.scrapbookText}>
-                        {element.text}
-                    </Text>
+                    <DraggableText
+                        key={element.id}
+                        text={element.text}
+                    />
                 ))}
                 {isAddingText && (
                     <View style={styles.textInputContainer}>
