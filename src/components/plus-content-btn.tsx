@@ -2,8 +2,18 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function AddContentButton() {
+type AddContentButtonProps = {
+    onAddText: () => void;
+};
+
+export default function AddContentButton({ onAddText }: AddContentButtonProps) {
     const [menuOpen, setMenuOpen] = useState(false);
+    const handleMenuPress = (label: string) => {
+        if (label === 'Text') {
+            onAddText();
+        }
+        setMenuOpen(false);
+    };
 
     const menuItems = [
         { label: 'Image', icon: 'image-outline' },
@@ -22,6 +32,7 @@ export default function AddContentButton() {
                         <Pressable
                             key={item.label}
                             style={styles.menuItem}
+                            onPress={() => handleMenuPress(item.label)}
                         >
                             <Ionicons
                                 name={item.icon}
