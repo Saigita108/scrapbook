@@ -2,13 +2,35 @@ import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
 import Plusbtn from '@/components/plus-content-btn';
 
+type ScrapbookText = {
+    id: string;
+    text: string;
+};
+
 export default function TodayScreen() {
     const [isAddingText, setIsAddingText] = useState(false);
     const [textInput, setTextInput] = useState('');
+    const [textElements, setTextElements] = useState<ScrapbookText[]>([]);
 
     const handleAddText = () => {
         console.log('Add text!');
         setIsAddingText(true);
+    };
+    const handleSubmitText = () => {
+        if (!textInput.trim()) return;
+
+        const newTextElement: ScrapbookText = {
+            id: Date.now().toString(),
+            text: textInput.trim(),
+        };
+
+        setTextElements((currentElements) => [
+            ...currentElements,
+            newTextElement,
+        ]);
+
+        setTextInput('');
+        setIsAddingText(false);
     };
 
     return (
@@ -17,6 +39,11 @@ export default function TodayScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.container}>
+                {textElements.map((element) => (
+                    <Text key={element.id} style={styles.scrapbookText}>
+                        {element.text}
+                    </Text>
+                ))}
                 {isAddingText && (
                     <View style={styles.textInputContainer}>
                         <TextInput
@@ -27,16 +54,18 @@ export default function TodayScreen() {
                             autoFocus
                         />
                         <View style={styles.textInputButtons}>
-                            <Pressable style={styles.doneButton}>
+                            <Pressable style={styles.doneButton} onPress={handleSubmitText}>
                                 <Text style={styles.doneButtonText}>Add</Text>
                             </Pressable>
-                            <Pressable style={styles.cancelButton}>
+                            <Pressable style={styles.cancelButton} onPress={() => {
+                                setTextInput('');
+                                setIsAddingText(false);
+                            }}>
                                 <Text style={styles.cancelButtonText}>Cancel</Text>
                             </Pressable>
                         </View>
                     </View>
                 )}
-
                 <Plusbtn onAddText={handleAddText} />
             </View>
         </KeyboardAvoidingView>
@@ -49,6 +78,13 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#99895f',
+    },
+
+    scrapbookText: {
+        position: 'absolute',
+        top: 100,
+        left: 100,
+        fontSize: 20,
     },
 
     title: {
