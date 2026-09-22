@@ -6,6 +6,8 @@ import GesturesText from '@/components/TextComponent';
 import ImageComponent from '@/components/ImageComponent';
 import StickerComponent, { type Sticker } from '@/components/StickerComponent';
 import StickerPicker from '@/components/StickerPicker';
+import AudioRecorder, { type AudioClip } from '@/components/AudioRecorder';
+import AudioComponent from '@/components/AudioComponent';
 import TrashBin, { useTrashTarget } from '@/components/TrashBin';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -28,6 +30,26 @@ export default function TodayScreen() {
     const [isAddingSticker, setIsAddingSticker] = useState(false);
     const [stickerElements, setStickerElements] = useState<{ id: string; sticker: Sticker }[]>([]);
     const trash = useTrashTarget();
+    const [isAddingAudio, setIsAddingAudio] = useState(false);
+    const [audioElements, setAudioElements] = useState<(AudioClip & { id: string })[]>([]);
+
+    const handleAddAudio = () => {
+        Keyboard.dismiss();
+        setIsAddingText(false);
+        setIsAddingImage(false);
+        setIsAddingSticker(false);
+        setIsAddingAudio(true);
+    };
+
+    const saveAudio = (clip: AudioClip) => {
+        const element = { ...clip, id: Date.now().toString() };
+        setAudioElements((current) => [...current, element]);
+        setIsAddingAudio(false);
+    };
+
+    const deleteAudio = (id: string) => {
+        setAudioElements((current) => current.filter((element) => element.id !== id));
+    };
 
     const addSticker = (sticker: Sticker) => {
         const newSticker = { id: Date.now().toString(), sticker };
@@ -168,6 +190,16 @@ export default function TodayScreen() {
                         onDelete={() => deleteSticker(element.id)}
                     />
                 ))}
+                {audioElements.map((element) => (
+                    <AudioComponent
+                        key={element.id}
+                        id={`audio:${element.id}`}
+                        clip={element}
+                        recording={isAddingAudio}
+                        trash={trash}
+                        onDelete={() => deleteAudio(element.id)}
+                    />
+                ))}
                 {isAddingText && (
                     <View style={styles.textInputContainer}>
                         <TextInput
@@ -222,7 +254,8 @@ export default function TodayScreen() {
                     onSelect={addSticker}
                     onClose={() => setIsAddingSticker(false)}
                 />
-                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={handleAddSticker} />
+                {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
+                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={handleAddSticker} onAddAudio={handleAddAudio} />
                 <TrashBin target={trash} />
             </View>
         </KeyboardAvoidingView>

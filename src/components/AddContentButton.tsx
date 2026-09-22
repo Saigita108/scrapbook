@@ -6,9 +6,10 @@ type AddContentButtonProps = {
     onAddText: () => void;
     onAddImage: () => void;
     onAddSticker: () => void;
+    onAddAudio: () => void;
 };
 
-export default function AddContentButton({ onAddText, onAddImage, onAddSticker }: AddContentButtonProps) {
+export default function AddContentButton({ onAddText, onAddImage, onAddSticker, onAddAudio }: AddContentButtonProps) {
     const [menuOpen, setMenuOpen] = useState(false);
     const handleMenuPress = (label: string) => {
         if (label === 'Text') {
@@ -19,6 +20,9 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker }
         }
         if (label === 'Sticker') {
             onAddSticker();
+        }
+        if (label === 'Audio') {
+            onAddAudio();
         }
         setMenuOpen(false);
     };

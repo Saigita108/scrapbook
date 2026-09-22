@@ -16,9 +16,10 @@ export type GestureItemProps = {
     trash: TrashTarget;
     onDelete: (id: string) => void;
     style?: StyleProp<ViewStyle>;
+    onTap?: () => void;
 };
 
-export default function GestureItem({ children, id, trash, onDelete, style }: GestureItemProps) {
+export default function GestureItem({ children, id, trash, onDelete, style, onTap }: GestureItemProps) {
     const layoutCenter = useSharedValue({ x: 0, y: 0 });
     const layoutSize = useSharedValue({ width: 0, height: 0 });
     // Position
@@ -56,7 +57,7 @@ export default function GestureItem({ children, id, trash, onDelete, style }: Ge
     });
 
     const drag = Gesture.Pan()
-        .minDistance(0)
+        .minDistance(onTap ? 10 : 0)
         .averageTouches(true)
         .onBegin(() => {
             trash.activeId.value = id;
@@ -102,6 +103,9 @@ export default function GestureItem({ children, id, trash, onDelete, style }: Ge
         pinch,
         rotate
     );
+    const tap = Gesture.Tap().maxDistance(10).onEnd((_event, success) => {
+        if (success && onTap) scheduleOnRN(onTap);
+    });
 
     // Apply transformations
     const animatedStyle = useAnimatedStyle(() => {
@@ -117,7 +121,7 @@ export default function GestureItem({ children, id, trash, onDelete, style }: Ge
     });
 
     return (
-        <GestureDetector gesture={combinedGesture}>
+        <GestureDetector gesture={onTap ? Gesture.Exclusive(combinedGesture, tap) : combinedGesture}>
             <Animated.View
                 onLayout={({ nativeEvent: { layout } }) => {
                     layoutSize.value = { width: layout.width, height: layout.height };
