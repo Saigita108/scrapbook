@@ -33,23 +33,51 @@ export default function TodayScreen() {
         setImageElements((current) => current.filter((element) => element.id !== id));
     };
 
+    const addPickedImage = (result: ImagePicker.ImagePickerResult) => {
+        if (result.canceled) return;
+        const asset = result.assets[0];
+        if (!asset) return;
+
+        const newImage: ScrapbookImage = {
+            id: Date.now().toString(),
+            uri: asset.uri,
+        };
+        setImageElements((current) => [...current, newImage]);
+        setIsAddingImage(false);
+    };
+
+    const takePhoto = async () => {
+        try {
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            if (!permission.granted) {
+                Alert.alert(
+                    'Camera access needed',
+                    permission.canAskAgain
+                        ? 'Allow camera access to take a photo for your scrapbook.'
+                        : 'Enable camera access for Scrapbook in your device settings.',
+                );
+                return;
+            }
+
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ['images'],
+                allowsEditing: false,
+                quality: 1,
+            });
+            addPickedImage(result);
+        } catch (error) {
+            console.error('Failed to take a photo:', error);
+            Alert.alert('Could not open camera', 'Try again on a device with a camera.');
+        }
+    };
+
     const pickImage = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ['images'],
             });
 
-            if (result.canceled) return;
-
-            const asset = result.assets[0];
-            if (!asset) return;
-
-            const newImage: ScrapbookImage = {
-                id: Date.now().toString(),
-                uri: asset.uri,
-            };
-            setImageElements((current) => [...current, newImage]);
-            setIsAddingImage(false);
+            addPickedImage(result);
         } catch (error) {
             console.error('Failed to pick an image:', error);
             Alert.alert('Could not open photo library', 'Please try again.');
@@ -60,9 +88,11 @@ export default function TodayScreen() {
         console.log('Add text!');
         setIsAddingText(true);
     };
+
     const handleAddImage = () => {
         setIsAddingImage(true);
     };
+
     const handleSubmitText = () => {
         if (!textInput.trim()) return;
 
@@ -79,7 +109,6 @@ export default function TodayScreen() {
         setTextInput('');
         setIsAddingText(false);
     };
-    
 
     return (
         <KeyboardAvoidingView
@@ -137,7 +166,7 @@ export default function TodayScreen() {
                             Add a photo
                         </Text>
 
-                        <Pressable style={styles.imageOption}>
+                        <Pressable style={styles.imageOption} onPress={takePhoto}>
                             <Ionicons name="camera-outline" size={24} color="#000" />
                             <Text>Camera</Text>
                         </Pressable>
