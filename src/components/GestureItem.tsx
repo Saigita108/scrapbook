@@ -8,6 +8,7 @@ import Animated, {
     useSharedValue,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
+import { overlapsTrash } from '@/utils/overlapsTrash';
 
 export type GestureItemProps = {
     children: ReactNode;
@@ -19,6 +20,7 @@ export type GestureItemProps = {
 
 export default function GestureItem({ children, id, trash, onDelete, style }: GestureItemProps) {
     const layoutCenter = useSharedValue({ x: 0, y: 0 });
+    const layoutSize = useSharedValue({ width: 0, height: 0 });
     // Position
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -35,12 +37,18 @@ export default function GestureItem({ children, id, trash, onDelete, style }: Ge
     const isOverTrash = () => {
         'worklet';
         const target = trash.center.value;
-        if (!target) return false;
-        // Both centers are relative to the scrapbook canvas. Scaling and
-        // rotation leave the item's center unchanged.
-        const dx = layoutCenter.value.x + translateX.value - target.x;
-        const dy = layoutCenter.value.y + translateY.value - target.y;
-        return dx * dx + dy * dy <= TRASH_RADIUS * TRASH_RADIUS;
+        if (!target || layoutSize.value.width === 0 || layoutSize.value.height === 0) return false;
+        return overlapsTrash(
+            layoutCenter.value.x + translateX.value,
+            layoutCenter.value.y + translateY.value,
+            layoutSize.value.width,
+            layoutSize.value.height,
+            scale.value,
+            rotation.value,
+            target.x,
+            target.y,
+            TRASH_RADIUS,
+        );
     };
 
     useAnimatedReaction(isOverTrash, (isOver) => {
@@ -112,6 +120,7 @@ export default function GestureItem({ children, id, trash, onDelete, style }: Ge
         <GestureDetector gesture={combinedGesture}>
             <Animated.View
                 onLayout={({ nativeEvent: { layout } }) => {
+                    layoutSize.value = { width: layout.width, height: layout.height };
                     layoutCenter.value = {
                         x: layout.x + layout.width / 2,
                         y: layout.y + layout.height / 2,

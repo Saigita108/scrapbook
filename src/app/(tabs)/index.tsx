@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
 import GesturesText from '@/components/TextComponent';
-import GestureItem from '@/components/GestureItem';
+import ImageComponent from '@/components/ImageComponent';
 import TrashBin, { useTrashTarget } from '@/components/TrashBin';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -92,19 +91,14 @@ export default function TodayScreen() {
                 onLayout={trash.onCanvasLayout}
             >
                 {imageElements.map((element, index) => (
-                    <GestureItem
+                    <ImageComponent
                         key={element.id}
                         id={`image:${element.id}`}
+                        uri={element.uri}
+                        index={index}
                         trash={trash}
                         onDelete={() => deleteImage(element.id)}
-                        style={{ left: 20, top: 40 + index * 24 }}
-                    >
-                        <Image
-                            source={{ uri: element.uri }}
-                            style={styles.scrapbookImage}
-                            contentFit="contain"
-                        />
-                    </GestureItem>
+                    />
                 ))}
                 {textElements.map((element) => (
                     <GesturesText
@@ -177,11 +171,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#99895f',
-    },
-
-    scrapbookImage: {
-        width: 200,
-        height: 200,
     },
 
     scrapbookText: {
