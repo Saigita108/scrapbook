@@ -3,7 +3,9 @@ import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, Keyboard
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
-import DraggableText from '@/components/DraggableText';
+import GesturesText from '@/components/TextComponent';
+import GestureItem from '@/components/GestureItem';
+import TrashBin, { useTrashTarget } from '@/components/TrashBin';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 type ScrapbookText = {
@@ -22,6 +24,15 @@ export default function TodayScreen() {
     const [textInput, setTextInput] = useState('');
     const [textElements, setTextElements] = useState<ScrapbookText[]>([]);
     const [imageElements, setImageElements] = useState<ScrapbookImage[]>([]);
+    const trash = useTrashTarget();
+
+    const deleteText = (id: string) => {
+        setTextElements((current) => current.filter((element) => element.id !== id));
+    };
+
+    const deleteImage = (id: string) => {
+        setImageElements((current) => current.filter((element) => element.id !== id));
+    };
 
     const pickImage = async () => {
         try {
@@ -76,19 +87,32 @@ export default function TodayScreen() {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <View style={styles.container}>
+            <View
+                style={styles.container}
+                onLayout={trash.onCanvasLayout}
+            >
                 {imageElements.map((element, index) => (
-                    <Image
+                    <GestureItem
                         key={element.id}
-                        source={{ uri: element.uri }}
-                        style={[styles.scrapbookImage, { top: 40 + index * 24 }]}
-                        contentFit="contain"
-                    />
+                        id={`image:${element.id}`}
+                        trash={trash}
+                        onDelete={() => deleteImage(element.id)}
+                        style={{ left: 20, top: 40 + index * 24 }}
+                    >
+                        <Image
+                            source={{ uri: element.uri }}
+                            style={styles.scrapbookImage}
+                            contentFit="contain"
+                        />
+                    </GestureItem>
                 ))}
                 {textElements.map((element) => (
-                    <DraggableText
+                    <GesturesText
                         key={element.id}
+                        id={`text:${element.id}`}
                         text={element.text}
+                        trash={trash}
+                        onDelete={() => deleteText(element.id)}
                     />
                 ))}
                 {isAddingText && (
@@ -141,6 +165,7 @@ export default function TodayScreen() {
                     </View>
                 )}
                 <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} />
+                <TrashBin target={trash} />
             </View>
         </KeyboardAvoidingView>
     );
@@ -155,8 +180,6 @@ const styles = StyleSheet.create({
     },
 
     scrapbookImage: {
-        position: 'absolute',
-        left: 20,
         width: 200,
         height: 200,
     },
