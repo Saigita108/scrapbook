@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
 import GesturesText from '@/components/TextComponent';
 import ImageComponent from '@/components/ImageComponent';
+import StickerComponent, { type Sticker } from '@/components/StickerComponent';
+import StickerPicker from '@/components/StickerPicker';
 import TrashBin, { useTrashTarget } from '@/components/TrashBin';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -23,7 +25,26 @@ export default function TodayScreen() {
     const [textInput, setTextInput] = useState('');
     const [textElements, setTextElements] = useState<ScrapbookText[]>([]);
     const [imageElements, setImageElements] = useState<ScrapbookImage[]>([]);
+    const [isAddingSticker, setIsAddingSticker] = useState(false);
+    const [stickerElements, setStickerElements] = useState<{ id: string; sticker: Sticker }[]>([]);
     const trash = useTrashTarget();
+
+    const addSticker = (sticker: Sticker) => {
+        const newSticker = { id: Date.now().toString(), sticker };
+        setStickerElements((current) => [...current, newSticker]);
+        setIsAddingSticker(false);
+    };
+
+    const deleteSticker = (id: string) => {
+        setStickerElements((current) => current.filter((element) => element.id !== id));
+    };
+
+    const handleAddSticker = () => {
+        Keyboard.dismiss();
+        setIsAddingText(false);
+        setIsAddingImage(false);
+        setIsAddingSticker(true);
+    };
 
     const deleteText = (id: string) => {
         setTextElements((current) => current.filter((element) => element.id !== id));
@@ -138,6 +159,15 @@ export default function TodayScreen() {
                         onDelete={() => deleteText(element.id)}
                     />
                 ))}
+                {stickerElements.map((element) => (
+                    <StickerComponent
+                        key={element.id}
+                        id={`sticker:${element.id}`}
+                        sticker={element.sticker}
+                        trash={trash}
+                        onDelete={() => deleteSticker(element.id)}
+                    />
+                ))}
                 {isAddingText && (
                     <View style={styles.textInputContainer}>
                         <TextInput
@@ -187,7 +217,12 @@ export default function TodayScreen() {
                         </Pressable>
                     </View>
                 )}
-                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} />
+                <StickerPicker
+                    visible={isAddingSticker}
+                    onSelect={addSticker}
+                    onClose={() => setIsAddingSticker(false)}
+                />
+                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={handleAddSticker} />
                 <TrashBin target={trash} />
             </View>
         </KeyboardAvoidingView>
