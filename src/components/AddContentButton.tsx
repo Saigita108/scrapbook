@@ -4,13 +4,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 type AddContentButtonProps = {
     onAddText: () => void;
+    onAddImage: () => void;
 };
 
-export default function AddContentButton({ onAddText }: AddContentButtonProps) {
+export default function AddContentButton({ onAddText, onAddImage }: AddContentButtonProps) {
     const [menuOpen, setMenuOpen] = useState(false);
     const handleMenuPress = (label: string) => {
         if (label === 'Text') {
             onAddText();
+        }
+        if (label === 'Image') {
+            onAddImage();
         }
         setMenuOpen(false);
     };
