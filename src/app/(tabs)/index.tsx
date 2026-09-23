@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
+import { AudioModule } from 'expo-audio';
+import VideoComponent from '@/components/VideoComponent';
 import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
 import ClearDayButton from '@/components/ClearDayButton';
@@ -37,7 +39,61 @@ export default function TodayScreen() {
     const [isAddingAudio, setIsAddingAudio] = useState(false);
     const [audioElements, setAudioElements] = useState<(AudioClip & { id: string })[]>([]);
 
+    const [videoElements, setVideoElements] = useState<ScrapbookImage[]>([]);
+    const [isRecordingVideo, setIsRecordingVideo] = useState(false);
+    const videoCaptureActive = useRef(false);
+    const dayRevision = useRef(0);
+
+    const handleAddVideo = async () => {
+        if (videoCaptureActive.current) return;
+        if (Platform.OS === 'web') {
+            Alert.alert('Record on your phone', 'Open Scrapbook on iOS or Android to film a video with sound.');
+            return;
+        }
+        videoCaptureActive.current = true;
+        const revision = dayRevision.current;
+        Keyboard.dismiss();
+        setIsAddingText(false);
+        setIsAddingImage(false);
+        setIsAddingSticker(false);
+        setIsAddingAudio(false);
+        setIsRecordingVideo(true);
+        try {
+            const camera = await ImagePicker.requestCameraPermissionsAsync();
+            if (!camera.granted) {
+                Alert.alert('Camera access needed', camera.canAskAgain
+                    ? 'Allow camera access to film a video.'
+                    : 'Enable camera access for Scrapbook in your device settings.');
+                return;
+            }
+            const microphone = await AudioModule.requestRecordingPermissionsAsync();
+            if (!microphone.granted) {
+                Alert.alert('Microphone access needed', microphone.canAskAgain
+                    ? 'Allow microphone access to record your video with sound.'
+                    : 'Enable microphone access for Scrapbook in your device settings.');
+                return;
+            }
+            if (revision !== dayRevision.current) return;
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ['videos'],
+                allowsEditing: false,
+            });
+            if (result.canceled || revision !== dayRevision.current) return;
+            const asset = result.assets[0];
+            if (asset) {
+                setVideoElements((current) => [...current, { id: Date.now().toString(), uri: asset.uri }]);
+            }
+        } catch {
+            Alert.alert('Could not record video', 'Please try again on a device with a camera.');
+        } finally {
+            videoCaptureActive.current = false;
+            setIsRecordingVideo(false);
+        }
+    };
+
     const clearDay = () => {
+        dayRevision.current += 1;
+        setVideoElements([]);
         Keyboard.dismiss();
         setTextElements([]);
         setImageElements([]);
@@ -213,9 +269,19 @@ export default function TodayScreen() {
                         key={element.id}
                         id={`audio:${element.id}`}
                         clip={element}
-                        recording={isAddingAudio}
+                        recording={isAddingAudio || isRecordingVideo}
                         trash={trash}
                         onDelete={() => deleteAudio(element.id)}
+                    />
+                ))}
+                {videoElements.map((element) => (
+                    <VideoComponent
+                        key={element.id}
+                        id={`video:${element.id}`}
+                        uri={element.uri}
+                        recording={isAddingAudio || isRecordingVideo}
+                        trash={trash}
+                        onDelete={() => setVideoElements((current) => current.filter((video) => video.id !== element.id))}
                     />
                 ))}
                 {isAddingText && (
@@ -275,7 +341,7 @@ export default function TodayScreen() {
                     onClose={() => setIsAddingSticker(false)}
                 />
                 {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
-                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
+                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
                 <ClearDayButton onClearDay={clearDay} onOpen={() => setContentMenuOpen(false)} />
                 <TrashBin target={trash} />
             </View>

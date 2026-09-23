@@ -28,7 +28,8 @@
       [
         "expo-image-picker",
         {
-          "cameraPermission": "Allow Scrapbook to take photos for your scrapbook."
+          "cameraPermission": "Allow Scrapbook to take photos and record videos for your scrapbook.",
+          "microphonePermission": "Allow Scrapbook to record audio and videos with sound for your scrapbook."
         }
       ],
       [
@@ -42,11 +43,12 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Scrapbook to record audio for your scrapbook.",
+          "microphonePermission": "Allow Scrapbook to record audio and videos with sound for your scrapbook.",
           "enableBackgroundPlayback": false,
           "enableBackgroundRecording": false
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
