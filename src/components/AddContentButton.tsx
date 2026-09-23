@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -6,11 +5,13 @@ type AddContentButtonProps = {
     onAddText: () => void;
     onAddImage: () => void;
     onAddSticker: () => void;
+    onAddGif: () => void;
     onAddAudio: () => void;
+    menuOpen: boolean;
+    onMenuOpenChange: (open: boolean) => void;
 };
 
-export default function AddContentButton({ onAddText, onAddImage, onAddSticker, onAddAudio }: AddContentButtonProps) {
-    const [menuOpen, setMenuOpen] = useState(false);
+export default function AddContentButton({ onAddText, onAddImage, onAddSticker, onAddGif, onAddAudio, menuOpen, onMenuOpenChange }: AddContentButtonProps) {
     const handleMenuPress = (label: string) => {
         if (label === 'Text') {
             onAddText();
@@ -24,13 +25,17 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
         if (label === 'Audio') {
             onAddAudio();
         }
-        setMenuOpen(false);
+        if (label === 'GIFs') {
+            onAddGif();
+        }
+        onMenuOpenChange(false);
     };
 
     const menuItems = [
         { label: 'Image', icon: 'image-outline' },
         { label: 'Text', icon: 'text-outline' },
         { label: 'Sticker', icon: 'happy-outline' },
+        { label: 'GIFs', icon: 'film-outline' },
         { label: 'Audio', icon: 'mic-outline' },
         { label: 'Video', icon: 'videocam-outline' },
     ] as const;
@@ -62,7 +67,7 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
 
             <Pressable
                 style={styles.addButton}
-                onPress={() => setMenuOpen(!menuOpen)}
+                onPress={() => onMenuOpenChange(!menuOpen)}
             >
                 <Ionicons
                     name={menuOpen ? 'close' : 'add'}
@@ -70,6 +75,8 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
                     color="white"
                 />
             </Pressable>
+
+
 
         </View>
     );
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     wrapper: {
         position: 'absolute',
         right: 20,
-        bottom: 20,
+        bottom: 86,
         alignItems: 'flex-end',
     },
 

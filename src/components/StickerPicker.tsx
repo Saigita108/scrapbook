@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
 import type { Sticker } from './StickerComponent';
-import { fetchKlipyStickers, KLIPY_API_KEY } from '../services/klipy';
+import { fetchKlipyStickers, KLIPY_API_KEY, type KlipyMediaType } from '../services/klipy';
 
 type Props = {
     visible: boolean;
+    mediaType?: KlipyMediaType;
     onSelect: (sticker: Sticker) => void;
     onClose: () => void;
 };
 
-export default function StickerPicker({ visible, onSelect, onClose }: Props) {
+export default function StickerPicker({ visible, onSelect, onClose, mediaType = 'stickers' }: Props) {
+    const label = mediaType === 'gifs' ? 'GIFs' : 'stickers';
+    const singular = mediaType === 'gifs' ? 'GIF' : 'sticker';
     const [input, setInput] = useState('');
     const [query, setQuery] = useState('');
     const [page, setPage] = useState(1);
@@ -32,7 +35,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
             controller.abort();
         }, 15000);
 
-        fetchKlipyStickers(query, page, controller.signal)
+        fetchKlipyStickers(query, page, controller.signal, mediaType)
             .then((result) => {
                 if (!active) return;
                 setStickers((current) => {
@@ -42,7 +45,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
                 setHasNext(result.hasNext);
             })
             .catch(() => {
-                if (active) setError(timedOut ? 'Loading took too long. Please try again.' : 'Could not load stickers. Please try again.');
+                if (active) setError(timedOut ? 'Loading took too long. Please try again.' : `Could not load ${label}. Please try again.`);
             })
             .finally(() => {
                 clearTimeout(timeout);
@@ -54,7 +57,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
             clearTimeout(timeout);
             controller.abort();
         };
-    }, [visible, query, page, retry]);
+    }, [visible, query, page, retry, mediaType, label]);
 
     const search = (value: string) => {
         setQuery(value.trim());
@@ -69,7 +72,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
             key={sticker.id}
             onPress={() => onSelect(sticker)}
             accessibilityRole="button"
-            accessibilityLabel={`Add ${sticker.title || `sticker ${index + 1}`}`}
+            accessibilityLabel={`Add ${sticker.title || `${singular} ${index + 1}`}`}
             style={({ pressed }) => [styles.option, pressed && styles.pressed]}
         >
             <Image source={sticker.source} style={styles.image} contentFit="contain" />
@@ -79,17 +82,17 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
     return (
         <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
             <View style={styles.overlay}>
-                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close sticker library" />
+                <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={`Close ${singular} library`} />
                 <View style={styles.panel}>
-                    <Text style={styles.title}>Choose a sticker</Text>
+                    <Text style={styles.title}>Choose a {singular}</Text>
                     {KLIPY_API_KEY && (
                         <View style={styles.searchRow}>
                             <TextInput
                                 value={input}
                                 onChangeText={setInput}
                                 onSubmitEditing={() => search(input)}
-                                placeholder="Search stickers"
-                                accessibilityLabel="Search Klipy stickers"
+                                placeholder={`Search ${label}`}
+                                accessibilityLabel={`Search Klipy ${label}`}
                                 returnKeyType="search"
                                 style={styles.searchInput}
                             />
@@ -101,7 +104,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
                     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
                         <Text style={styles.sectionTitle}>{query ? `Results for “${query}”` : 'Trending on KLIPY'}</Text>
                         {!KLIPY_API_KEY ? (
-                            <Text style={styles.message}>Online stickers are not available yet.</Text>
+                            <Text style={styles.message}>Online {label} are not available yet.</Text>
                         ) : (
                             <>
                                 {query !== '' && (
@@ -110,7 +113,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
                                     </Pressable>
                                 )}
                                 <View style={styles.list}>{stickers.map(renderSticker)}</View>
-                                {loading && <ActivityIndicator accessibilityLabel="Loading stickers" />}
+                                {loading && <ActivityIndicator accessibilityLabel={`Loading ${label}`} />}
                                 {error && (
                                     <View>
                                         <Text style={styles.message} accessibilityRole="alert">{error}</Text>
@@ -119,7 +122,7 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
                                         </Pressable>
                                     </View>
                                 )}
-                                {!loading && !error && stickers.length === 0 && <Text style={styles.message}>No stickers found. Try another search.</Text>}
+                                {!loading && !error && stickers.length === 0 && <Text style={styles.message}>No {label} found. Try another search.</Text>}
                                 {!loading && !error && hasNext && (
                                     <Pressable onPress={() => setPage((current) => current + 1)} accessibilityRole="button" style={styles.action}>
                                         <Text>Load more</Text>

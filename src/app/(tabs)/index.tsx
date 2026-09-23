@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
+import ClearDayButton from '@/components/ClearDayButton';
 import GesturesText from '@/components/TextComponent';
 import ImageComponent from '@/components/ImageComponent';
 import StickerComponent, { type Sticker } from '@/components/StickerComponent';
 import StickerPicker from '@/components/StickerPicker';
+import type { KlipyMediaType } from '@/services/klipy';
 import AudioRecorder, { type AudioClip } from '@/components/AudioRecorder';
 import AudioComponent from '@/components/AudioComponent';
 import TrashBin, { useTrashTarget } from '@/components/TrashBin';
@@ -22,16 +24,31 @@ type ScrapbookImage = {
 };
 
 export default function TodayScreen() {
+    const [contentMenuOpen, setContentMenuOpen] = useState(false);
     const [isAddingText, setIsAddingText] = useState(false);
     const [isAddingImage, setIsAddingImage] = useState(false);
     const [textInput, setTextInput] = useState('');
     const [textElements, setTextElements] = useState<ScrapbookText[]>([]);
     const [imageElements, setImageElements] = useState<ScrapbookImage[]>([]);
+    const [mediaType, setMediaType] = useState<KlipyMediaType>('stickers');
     const [isAddingSticker, setIsAddingSticker] = useState(false);
     const [stickerElements, setStickerElements] = useState<{ id: string; sticker: Sticker }[]>([]);
     const trash = useTrashTarget();
     const [isAddingAudio, setIsAddingAudio] = useState(false);
     const [audioElements, setAudioElements] = useState<(AudioClip & { id: string })[]>([]);
+
+    const clearDay = () => {
+        Keyboard.dismiss();
+        setTextElements([]);
+        setImageElements([]);
+        setStickerElements([]);
+        setAudioElements([]);
+        setTextInput('');
+        setIsAddingText(false);
+        setIsAddingImage(false);
+        setIsAddingSticker(false);
+        setIsAddingAudio(false);
+    };
 
     const handleAddAudio = () => {
         Keyboard.dismiss();
@@ -61,7 +78,8 @@ export default function TodayScreen() {
         setStickerElements((current) => current.filter((element) => element.id !== id));
     };
 
-    const handleAddSticker = () => {
+    const handleAddSticker = (type: KlipyMediaType = 'stickers') => {
+        setMediaType(type);
         Keyboard.dismiss();
         setIsAddingText(false);
         setIsAddingImage(false);
@@ -250,12 +268,15 @@ export default function TodayScreen() {
                     </View>
                 )}
                 <StickerPicker
+                    key={mediaType}
+                    mediaType={mediaType}
                     visible={isAddingSticker}
                     onSelect={addSticker}
                     onClose={() => setIsAddingSticker(false)}
                 />
                 {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
-                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={handleAddSticker} onAddAudio={handleAddAudio} />
+                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
+                <ClearDayButton onClearDay={clearDay} onOpen={() => setContentMenuOpen(false)} />
                 <TrashBin target={trash} />
             </View>
         </KeyboardAvoidingView>
