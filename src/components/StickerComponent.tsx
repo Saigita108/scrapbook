@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, type ImageSource } from 'expo-image';
 import GestureItem, { type GestureItemProps } from './GestureItem';
 
 export const STICKERS = [
@@ -10,7 +10,11 @@ export const STICKERS = [
     { id: 'emoji5', source: require('../../assets/stickers/emoji5.png') },
 ] as const;
 
-export type Sticker = (typeof STICKERS)[number];
+export type Sticker = {
+    id: string;
+    title?: string;
+    source: number | ImageSource;
+};
 type Props = Omit<GestureItemProps, 'children' | 'style'> & { sticker: Sticker };
 
 export default function StickerComponent({ sticker, ...gestureProps }: Props) {

@@ -4,6 +4,18 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+### Klipy stickers
+
+Create an API key in the [Klipy Partner Panel](https://partner.klipy.com/).
+Copy `.env.example` to `.env.local`, set `EXPO_PUBLIC_KLIPY_API_KEY`, and restart
+Expo. The sticker popup will load trending stickers and support keyword search.
+Without a key, the bundled emoji stickers remain available.
+
+This is a client-side API key: Expo includes `EXPO_PUBLIC_` values in the app
+bundle. Use a key intended for your Klipy client integration.
+
+### Run the app
+
 1. Install dependencies
 
    ```bash
