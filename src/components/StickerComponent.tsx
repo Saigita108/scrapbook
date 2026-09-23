@@ -2,14 +2,6 @@ import { StyleSheet } from 'react-native';
 import { Image, type ImageSource } from 'expo-image';
 import GestureItem, { type GestureItemProps } from './GestureItem';
 
-export const STICKERS = [
-    { id: 'emoji1', source: require('../../assets/stickers/emoji1.png') },
-    { id: 'emoji2', source: require('../../assets/stickers/emoji2.png') },
-    { id: 'emoji3', source: require('../../assets/stickers/emoji3.png') },
-    { id: 'emoji4', source: require('../../assets/stickers/emoji4.png') },
-    { id: 'emoji5', source: require('../../assets/stickers/emoji5.png') },
-] as const;
-
 export type Sticker = {
     id: string;
     title?: string;

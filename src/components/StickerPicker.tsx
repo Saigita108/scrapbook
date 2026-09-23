@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
-import { STICKERS, type Sticker } from './StickerComponent';
+import type { Sticker } from './StickerComponent';
 import { fetchKlipyStickers, KLIPY_API_KEY } from '../services/klipy';
 
 type Props = {
@@ -99,8 +99,6 @@ export default function StickerPicker({ visible, onSelect, onClose }: Props) {
                         </View>
                     )}
                     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-                        <Text style={styles.sectionTitle}>Emoji stickers</Text>
-                        <View style={styles.list}>{STICKERS.map(renderSticker)}</View>
                         <Text style={styles.sectionTitle}>{query ? `Results for “${query}”` : 'Trending on KLIPY'}</Text>
                         {!KLIPY_API_KEY ? (
                             <Text style={styles.message}>Online stickers are not available yet.</Text>
