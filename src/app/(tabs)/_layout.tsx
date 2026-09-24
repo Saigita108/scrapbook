@@ -1,13 +1,14 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import useToday from '@/hooks/useToday';
 
 export default function TabLayout() {
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB', {
+    const today = useToday();
+    const formattedDate = new Date(Date.UTC(today.year, today.month, today.day, 12)).toLocaleDateString('en-GB', {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
-        timeZone: 'Europe/Brussels',
+        timeZone: 'UTC',
     });
     return (
         <Tabs>
