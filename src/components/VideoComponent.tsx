@@ -70,7 +70,7 @@ export default function VideoComponent({ uri, recording, ...gestureProps }: Prop
                 <View style={styles.controls}>
                     <Ionicons name={isPlaying ? 'pause-circle' : 'play-circle'} size={24} color="#39362b" />
                     <Text style={styles.hint}>
-                        {status === 'error' ? 'Could not load video' : status === 'loading' ? 'Loading video…' : isPlaying ? 'Tap to pause' : 'Tap to play with sound'}
+                        {status === 'error' ? 'Could not load video' : status === 'loading' ? 'Loading video…' : isPlaying ? 'Tap to pause' : 'Tap to play'}
                     </Text>
                 </View>
             </View>
