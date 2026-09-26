@@ -266,7 +266,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 style={styles.container}
                 onLayout={trash.onCanvasLayout}
             >
-                <View ref={canvas} collapsable={false}>
+                <View ref={canvas} collapsable={false} style={styles.canvas}>
                     <Image
                         source={require('../../assets/images/paper-texture.jpeg')}
                         style={[StyleSheet.absoluteFill, styles.paperTexture]}
@@ -425,8 +425,9 @@ const styles = StyleSheet.create({
         position: 'absolute', bottom: 16, right: 16,
         padding: 12, borderRadius: 8, transform: [{ rotate: '-2deg' }],
         backgroundColor: 'rgba(164, 217, 218, 0.90)', color: '#282725',
-        fontSize: 12, fontWeight: '600',
+        fontFamily: 'DMSans', fontSize: 12, fontWeight: '600',
     },
+    canvas: { ...StyleSheet.absoluteFill, overflow: 'hidden' },
     container: {
         flex: 1,
         backgroundColor: '#a89e80',

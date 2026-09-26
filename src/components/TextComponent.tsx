@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
         minWidth: 120,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(223, 147, 206, 0.7)',
+        backgroundColor: '#a89e8062',
         borderRadius: 20,
     },
-    text: { fontSize: 20, color: '#f7f5f0', },
+    text: { fontFamily: 'IndieFlower', fontSize: 24, color: '#e8e5dd'},
 });

@@ -1,5 +1,5 @@
-import GestureItem, { type GestureItemProps } from './GestureItem';
 import { StyleSheet, Text } from 'react-native';
+import GestureItem, { type GestureItemProps } from './GestureItem';
 
 type Props = Omit<GestureItemProps, 'children' | 'style'> & { text: string };
 
@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
         borderRadius: 14,
     },
     text: {
+        fontFamily: 'Unbounded',
         fontSize: 20,
         fontWeight: '700',
         color: '#f7f5f0',
