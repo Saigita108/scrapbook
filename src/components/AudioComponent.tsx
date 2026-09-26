@@ -62,7 +62,7 @@ export default function AudioComponent({ clip, recording, ...gestureProps }: Pro
 }
 
 const styles = StyleSheet.create({
-    card: { left: 40, top: 180, padding: 14, borderRadius: 16, color: '#201e18db', backgroundColor: '#f9f1d8a6' },
+    card: { left: 40, top: 180, padding: 14, borderRadius: 16, color: '#201e18db', backgroundColor: '#f9f1d8' },
     row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     title: { fontSize: 16, fontWeight: '600', color: '#201e18db' },
     hint: { marginTop: 8, fontSize: 11, color: '#201e1878' },
