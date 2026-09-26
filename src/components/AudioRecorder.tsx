@@ -9,7 +9,7 @@ export function formatAudioTime(seconds: number) {
     return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
 }
 
-type Props = { onSave: (clip: AudioClip) => void; onCancel: () => void };
+type Props = { onSave: (clip: AudioClip) => void | Promise<void>; onCancel: () => void };
 
 export default function AudioRecorder({ onSave, onCancel }: Props) {
     const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -83,7 +83,7 @@ export default function AudioRecorder({ onSave, onCancel }: Props) {
             savedClip.current = { uri: recorder.uri, duration };
         }
         await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
-        onSave(savedClip.current);
+        await onSave(savedClip.current);
     });
 
     const cancel = () => perform(async () => {
