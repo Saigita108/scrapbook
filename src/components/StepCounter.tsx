@@ -79,7 +79,7 @@ export default function StepCounter({ date, onAdd, onClose }: Props) {
                         style={[styles.action, styles.add, (busy || steps === null || !!error) && styles.disabled]}
                         onPress={() => {
                             if (steps === null) return;
-                            onAdd(`${steps.toLocaleString()} steps`, session ? 'session' : 'daily');
+                            onAdd(`${steps.toLocaleString()} steps`, 'daily');
                         }}><Text style={styles.addText}>Add</Text></Pressable>
                 </View>
             </View>

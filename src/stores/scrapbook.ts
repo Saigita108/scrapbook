@@ -62,7 +62,7 @@ export const useScrapbook = create<ScrapbookStore>()(persist((set) => ({
     refreshDailySteps: (date, steps, ids) => set((state) => {
         const day = state.days[date];
         if (!day || !Number.isFinite(steps) || steps < 0) return state;
-        const text = `👣 ${steps.toLocaleString()} steps\nDaily steps · ${date}`;
+        const text = `${steps.toLocaleString()} steps`;
         let changed = false;
         const textElements = day.textElements.map((item) => {
             if (!ids.includes(item.id) || !isDailyStepText(item, date)) return item;
