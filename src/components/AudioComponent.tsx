@@ -50,20 +50,21 @@ export default function AudioComponent({ clip, recording, ...gestureProps }: Pro
     return (
         <GestureItem {...gestureProps} onTap={togglePlayback} style={styles.card}>
             <View accessible accessibilityRole="button" accessibilityLabel={status.playing ? 'Pause recording' : 'Play recording'} onAccessibilityTap={togglePlayback} style={styles.row}>
-                <Ionicons name={status.playing ? 'pause-circle' : 'play-circle'} size={40} color="#39362b" />
+                <Ionicons name={status.playing ? 'pause-circle' : 'play-circle'} size={40} color="#201e18db" />
                 <View>
                     <Text style={styles.title}>Audio recording</Text>
-                    <Text>{formatAudioTime(status.currentTime)} / {formatAudioTime(clip.duration)}</Text>
+                    <Text style={styles.time}>{formatAudioTime(status.currentTime)} / {formatAudioTime(clip.duration)}</Text>
                 </View>
             </View>
-            <Text style={styles.hint}>Tap to play · Drag to move</Text>
+            <Text style={styles.hint}>Tap to play</Text>
         </GestureItem>
     );
 }
 
 const styles = StyleSheet.create({
-    card: { left: 40, top: 180, padding: 14, borderRadius: 16, backgroundColor: '#f5ecd6' },
+    card: { left: 40, top: 180, padding: 14, borderRadius: 16, color: '#201e18db', backgroundColor: '#f9f1d8a6' },
     row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-    title: { fontSize: 16, fontWeight: '600' },
-    hint: { marginTop: 8, fontSize: 11, color: '#666' },
+    title: { fontSize: 16, fontWeight: '600', color: '#201e18db' },
+    hint: { marginTop: 8, fontSize: 11, color: '#201e1878' },
+    time: { fontSize: 12, color: '#201e18db' },
 });
