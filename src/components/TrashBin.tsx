@@ -27,7 +27,7 @@ export function useTrashTarget() {
 export default function TrashBin({ target }: { target: TrashTarget }) {
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: withTiming(target.activeId.value === null ? 0 : 1, { duration: 120 }),
-        backgroundColor: withTiming(target.isOver.value ? '#dc2626' : '#201e1837'),
+        backgroundColor: withTiming(target.isOver.value ? '#dc2626' : '#b8b29e37'),
         transform: [{ scale: withTiming(target.isOver.value ? 1 : 0.7, { duration: 150 }) }],
     }));
 

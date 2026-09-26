@@ -1,7 +1,7 @@
-import { Pressable } from 'react-native';
+import ScrapbookPage from '@/components/ScrapbookPage';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import ScrapbookPage from '@/components/ScrapbookPage';
+import { Pressable } from 'react-native';
 
 export default function DayScreen() {
     const { date } = useLocalSearchParams<{ date: string }>();
@@ -11,6 +11,8 @@ export default function DayScreen() {
     return <>
         <Stack.Screen options={{
             title,
+            headerStyle: { backgroundColor: '#a89e80' },
+            headerTintColor: '#282725',
             headerLeft: ({ tintColor }) => (
                 <Pressable accessibilityRole="button" accessibilityLabel="Back to calendar" hitSlop={8}
                     style={{ padding: 8 }} onPress={() => router.dismissTo('/calendar')}>
