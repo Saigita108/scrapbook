@@ -1,24 +1,25 @@
-import StepCounter from '@/components/StepCounter';
-import { useFocusEffect } from 'expo-router';
-import ShareButton from '@/components/ShareButton';
-import { emptyDay, useScrapbook, type Day } from '@/stores/scrapbook';
-import { saveMedia } from '@/utils/saveMedia';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
-import { AudioModule } from 'expo-audio';
-import VideoComponent from '@/components/VideoComponent';
-import * as ImagePicker from 'expo-image-picker';
 import Plusbtn from '@/components/AddContentButton';
+import AudioComponent from '@/components/AudioComponent';
+import AudioRecorder, { type AudioClip } from '@/components/AudioRecorder';
 import ClearDayButton from '@/components/ClearDayButton';
-import GesturesText from '@/components/TextComponent';
 import ImageComponent from '@/components/ImageComponent';
+import ShareButton from '@/components/ShareButton';
+import StepCounter from '@/components/StepCounter';
+import StepTextComponent from '@/components/StepTextComponent';
 import StickerComponent, { type Sticker } from '@/components/StickerComponent';
 import StickerPicker from '@/components/StickerPicker';
-import type { KlipyMediaType } from '@/services/klipy';
-import AudioRecorder, { type AudioClip } from '@/components/AudioRecorder';
-import AudioComponent from '@/components/AudioComponent';
+import GesturesText from '@/components/TextComponent';
 import TrashBin, { useTrashTarget } from '@/components/TrashBin';
+import VideoComponent from '@/components/VideoComponent';
+import type { KlipyMediaType } from '@/services/klipy';
+import { emptyDay, isDailyStepText, useScrapbook, type Day } from '@/stores/scrapbook';
+import { saveMedia } from '@/utils/saveMedia';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { AudioModule } from 'expo-audio';
+import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 type ScrapbookText = {
     id: string;
@@ -265,7 +266,11 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 style={styles.container}
                 onLayout={trash.onCanvasLayout}
             >
-                <View ref={canvas} collapsable={false} style={styles.canvas}>
+                <View ref={canvas} collapsable={false}>
+                    <Image
+                        source={require('../../assets/images/paper-texture.jpeg')}
+                        style={[StyleSheet.absoluteFill, styles.paperTexture]}
+                    />
                     {imageElements.map((element) => (
                         <ImageComponent
                             key={element.id}
@@ -278,15 +283,25 @@ export default function ScrapbookPage({ date }: { date: string }) {
                         />
                     ))}
                     {textElements.map((element) => (
-                        <GesturesText
-                            key={element.id}
-                            id={`text:${element.id}`}
-                            {...transformProps(`text:${element.id}`)}
-                            layer={4}
-                            text={element.text}
-                            trash={trash}
-                            onDelete={() => deleteText(element.id)}
-                        />
+                        element.stepSource || isDailyStepText(element, date)
+                            ? <StepTextComponent
+                                key={element.id}
+                                id={`text:${element.id}`}
+                                {...transformProps(`text:${element.id}`)}
+                                layer={4}
+                                text={element.text}
+                                trash={trash}
+                                onDelete={() => deleteText(element.id)}
+                            />
+                            : <GesturesText
+                                key={element.id}
+                                id={`text:${element.id}`}
+                                {...transformProps(`text:${element.id}`)}
+                                layer={4}
+                                text={element.text}
+                                trash={trash}
+                                onDelete={() => deleteText(element.id)}
+                            />
                     ))}
                     {stickerElements.map((element) => (
                         <StickerComponent
@@ -407,16 +422,17 @@ export default function ScrapbookPage({ date }: { date: string }) {
 
 const styles = StyleSheet.create({
     dateStamp: {
-        position: 'absolute', bottom: 16, right: 16, zIndex: 8,
-        paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)', color: '#39362b',
+        position: 'absolute', bottom: 16, right: 16,
+        padding: 12, borderRadius: 8, transform: [{ rotate: '-2deg' }],
+        backgroundColor: 'rgba(164, 217, 218, 0.90)', color: '#282725',
         fontSize: 12, fontWeight: '600',
     },
-    canvas: { ...StyleSheet.absoluteFill, backgroundColor: '#99895f', overflow: 'hidden' },
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#99895f',
+        backgroundColor: '#a89e80',
+    },
+    paperTexture: {
+        opacity: 0.4,
     },
 
     scrapbookText: {
@@ -427,7 +443,7 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 28,
+        fontSize: 30,
         fontWeight: 'bold',
     },
 

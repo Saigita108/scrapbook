@@ -1,6 +1,7 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { GlassView } from 'expo-glass-effect';
 import { useState } from 'react';
 import { Keyboard, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 type ClearDayButtonProps = {
     onClearDay: () => void;
@@ -12,18 +13,20 @@ export default function ClearDayButton({ onClearDay, onOpen }: ClearDayButtonPro
 
     return (
         <>
-            <Pressable
-                style={({ pressed }) => [styles.button, pressed && styles.pressed]}
-                accessibilityRole="button"
-                accessibilityLabel="Clear this day"
-                onPress={() => {
-                    Keyboard.dismiss();
-                    onOpen();
-                    setConfirmClear(true);
-                }}
-            >
-                <Ionicons name="refresh" size={28} color="white" />
-            </Pressable>
+            <GlassView style={styles.button} glassEffectStyle="regular" tintColor="rgba(255, 255, 255, 0.2)" isInteractive>
+                <Pressable
+                    style={({ pressed }) => [styles.buttonContent, pressed && styles.pressed]}
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear this day"
+                    onPress={() => {
+                        Keyboard.dismiss();
+                        onOpen();
+                        setConfirmClear(true);
+                    }}
+                >
+                    <Ionicons name="refresh" size={28} color="white" />
+                </Pressable>
+            </GlassView>
 
             <Modal
                 visible={confirmClear}
@@ -75,7 +78,13 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#000000',
+        backgroundColor: 'rgba(20, 27, 38, 0.42)',
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.55)',
+    },
+    buttonContent: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },

@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { GlassView } from 'expo-glass-effect';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type AddContentButtonProps = {
     onAddText: () => void;
@@ -72,16 +73,20 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
                 </View>
             )}
 
-            <Pressable
-                style={styles.addButton}
-                onPress={() => onMenuOpenChange(!menuOpen)}
-            >
-                <Ionicons
-                    name={menuOpen ? 'close' : 'add'}
-                    size={32}
-                    color="white"
-                />
-            </Pressable>
+            <GlassView style={styles.addButton} glassEffectStyle="regular" tintColor="rgba(255, 255, 255, 0.2)" isInteractive>
+                <Pressable
+                    style={styles.buttonContent}
+                    accessibilityRole="button"
+                    accessibilityLabel={menuOpen ? 'Close add content menu' : 'Add content'}
+                    onPress={() => onMenuOpenChange(!menuOpen)}
+                >
+                    <Ionicons
+                        name={menuOpen ? 'close' : 'add'}
+                        size={32}
+                        color="white"
+                    />
+                </Pressable>
+            </GlassView>
 
 
 
@@ -102,7 +107,14 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#000000',
+        backgroundColor: 'rgba(20, 27, 38, 0.42)',
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.55)',
+    },
+
+    buttonContent: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
