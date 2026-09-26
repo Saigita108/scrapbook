@@ -266,7 +266,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 style={styles.container}
                 onLayout={trash.onCanvasLayout}
             >
-                <View ref={canvas} collapsable={false}>
+                <View ref={canvas} collapsable={false} style={styles.canvas}>
                     <Image
                         source={require('../../assets/images/paper-texture.jpeg')}
                         style={[StyleSheet.absoluteFill, styles.paperTexture]}
@@ -369,7 +369,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                         </Text>
 
                         <Pressable style={styles.imageOption} onPress={takePhoto}>
-                            <Ionicons name="camera-outline" size={24} color="#000" />
+                            <Ionicons name="camera-outline" size={24} color="#201e18db" />
                             <Text>Camera</Text>
                         </Pressable>
 
@@ -377,7 +377,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                             style={styles.imageOption}
                             onPress={pickImage}
                         >
-                            <Ionicons name="images-outline" size={24} color="#000" />
+                            <Ionicons name="images-outline" size={24} color="#201e18db" />
                             <Text>Gallery</Text>
                         </Pressable>
 
@@ -401,14 +401,14 @@ export default function ScrapbookPage({ date }: { date: string }) {
                     setTextElements((current) => [...current, { id: `${Date.now()}-steps`, text, stepSource }]);
                     setIsAddingSteps(false);
                 }} />}
-                <Plusbtn onAddSteps={() => {
+                {!isAddingText && <Plusbtn onAddSteps={() => {
                     Keyboard.dismiss();
                     setIsAddingText(false);
                     setIsAddingImage(false);
                     setIsAddingSticker(false);
                     setIsAddingAudio(false);
                     setIsAddingSteps(true);
-                }} onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
+                }} onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />}
                 <ClearDayButton onClearDay={clearDay} onOpen={() => setContentMenuOpen(false)} />
                 <ShareButton canvas={canvas} date={date} onCaptureChange={setCapturing}
                     disabled={isAddingSteps || isAddingText || isAddingImage || isAddingSticker || isAddingAudio || isRecordingVideo}
@@ -425,8 +425,9 @@ const styles = StyleSheet.create({
         position: 'absolute', bottom: 16, right: 16,
         padding: 12, borderRadius: 8, transform: [{ rotate: '-2deg' }],
         backgroundColor: 'rgba(164, 217, 218, 0.90)', color: '#282725',
-        fontSize: 12, fontWeight: '600',
+        fontFamily: 'DMSans', fontSize: 12, fontWeight: '600',
     },
+    canvas: { ...StyleSheet.absoluteFill, overflow: 'hidden' },
     container: {
         flex: 1,
         backgroundColor: '#a89e80',
@@ -453,7 +454,7 @@ const styles = StyleSheet.create({
         left: 20,
         right: 20,
         bottom: 120,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#e9e6dc',
         padding: 12,
         borderRadius: 12,
     },
@@ -468,40 +469,40 @@ const styles = StyleSheet.create({
         fontSize: 16,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#DDDDDD',
+        borderColor: '#201e18db',
         borderRadius: 8,
     },
 
     doneButton: {
         flex: 1,
         padding: 10,
-        backgroundColor: '#000000',
+        backgroundColor: '#201e18db',
         borderRadius: 8,
         alignItems: 'center',
     },
 
     doneButtonText: {
-        color: '#FFFFFF',
+        color: '#e9e6dc',
     },
 
     cancelButton: {
         flex: 1,
         padding: 10,
-        backgroundColor: '#CCCCCC',
+        backgroundColor: '#201e1859',
         borderRadius: 8,
         alignItems: 'center',
     },
 
     cancelButtonText: {
-        color: '#000000',
+        color: '#e9e6dc',
     },
 
     imagePickerContainer: {
         position: 'absolute',
         left: 20,
         right: 20,
-        bottom: 90,
-        backgroundColor: '#FFFFFF',
+        bottom: 150,
+        backgroundColor: '#e9e6dc',
         padding: 16,
         borderRadius: 16,
         zIndex: 10,

@@ -24,7 +24,7 @@ export default function ClearDayButton({ onClearDay, onOpen }: ClearDayButtonPro
                         setConfirmClear(true);
                     }}
                 >
-                    <Ionicons name="refresh" size={28} color="white" />
+                    <Ionicons name="refresh" size={28} color="#201e1869" />
                 </Pressable>
             </GlassView>
 
@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: 'rgba(20, 27, 38, 0.42)',
+        backgroundColor: '#201e1837',
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.55)',
+        borderColor: '#201e1869',
     },
     buttonContent: {
         flex: 1,

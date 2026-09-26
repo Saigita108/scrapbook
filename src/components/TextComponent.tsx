@@ -13,12 +13,12 @@ export default function GesturesText({ text, ...gestureProps }: Props) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
+        padding: 10,
         minWidth: 120,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(223, 147, 206, 0.7)',
+        backgroundColor: '#9e9474',
         borderRadius: 20,
     },
-    text: { fontSize: 20, color: '#f7f5f0', },
+    text: { fontFamily: 'IndieFlower', fontSize: 24, color: '#e8e5dd'},
 });

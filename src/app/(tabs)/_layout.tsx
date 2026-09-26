@@ -1,6 +1,6 @@
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import useToday from '@/hooks/useToday';
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
     const today = useToday();
@@ -11,7 +11,22 @@ export default function TabLayout() {
         timeZone: 'UTC',
     });
     return (
-        <Tabs>
+        <Tabs screenOptions={{
+            tabBarActiveTintColor: '#201e18db',
+            tabBarInactiveTintColor: '#b4aa8be1',
+            tabBarStyle: {
+                backgroundColor: '#f9f1d8',
+                height: 68,
+                paddingTop: 6,
+            },
+            tabBarItemStyle: {
+                justifyContent: 'center',
+                alignItems: 'center',
+            },
+            tabBarLabelStyle: {
+                fontSize: 12,
+            },
+        }}>
             <Tabs.Screen
                 name="index"
                 options={{

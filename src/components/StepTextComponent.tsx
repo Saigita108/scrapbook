@@ -1,5 +1,5 @@
-import GestureItem, { type GestureItemProps } from './GestureItem';
 import { StyleSheet, Text } from 'react-native';
+import GestureItem, { type GestureItemProps } from './GestureItem';
 
 type Props = Omit<GestureItemProps, 'children' | 'style'> & { text: string };
 
@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
         minWidth: 120,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(164, 217, 218, 0.7)',
+        backgroundColor: '#46473f',
         borderRadius: 14,
     },
     text: {
+        fontFamily: 'Unbounded',
         fontSize: 20,
         fontWeight: '700',
-        color: '#f7f5f0',
+        color: '#f2f1ed',
     },
 });

@@ -1,6 +1,6 @@
+import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
 
 export type AudioClip = { uri: string; duration: number };
 
@@ -29,7 +29,6 @@ export default function AudioRecorder({ onSave, onCancel }: Props) {
         });
         return () => {
             subscription.remove();
-            // The recorder hook releases the microphone on unmount.
             void setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true }).catch(console.error);
         };
     }, [recorder]);
@@ -67,7 +66,6 @@ export default function AudioRecorder({ onSave, onCancel }: Props) {
             await recorder.prepareToRecordAsync();
             prepared.current = true;
         }
-        // Calling record again resumes the same file after pause.
         recorder.record();
         setPhase('recording');
     });
@@ -109,8 +107,8 @@ export default function AudioRecorder({ onSave, onCancel }: Props) {
                         <Text style={styles.recordLabel}>{phase === 'recording' ? 'Pause' : phase === 'paused' ? 'Resume recording' : 'Record'}</Text>
                     </Pressable>
                     <View style={styles.actions}>
-                        <Pressable disabled={busy} onPress={cancel} style={styles.button} accessibilityRole="button"><Text>Cancel</Text></Pressable>
-                        <Pressable disabled={!canSave} onPress={save} style={[styles.button, !canSave && styles.disabled]} accessibilityRole="button"><Text>Save</Text></Pressable>
+                        <Pressable disabled={busy} onPress={cancel} style={styles.button} accessibilityRole="button"><Text style={styles.buttonLabel}>Cancel</Text></Pressable>
+                        <Pressable disabled={!canSave} onPress={save} style={[styles.button, !canSave && styles.disabled]} accessibilityRole="button"><Text style={styles.buttonLabel}>Save</Text></Pressable>
                     </View>
                 </View>
             </View>
@@ -120,13 +118,14 @@ export default function AudioRecorder({ onSave, onCancel }: Props) {
 
 const styles = StyleSheet.create({
     overlay: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.35)' },
-    panel: { padding: 24, borderRadius: 20, backgroundColor: '#fff', gap: 16 },
-    title: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
-    timer: { fontSize: 36, textAlign: 'center', fontVariant: ['tabular-nums'] },
-    status: { textAlign: 'center' },
-    record: { padding: 16, borderRadius: 12, backgroundColor: '#a32929', alignItems: 'center' },
-    recordLabel: { color: '#fff', fontWeight: '600' },
+    panel: { padding: 24, borderRadius: 20, backgroundColor: '#f9f1d8', gap: 16 },
+    title: { fontSize: 20, fontWeight: '600', textAlign: 'center', color: '#201e18db' },
+    timer: { fontSize: 36, textAlign: 'center', fontVariant: ['tabular-nums'], color: '#201e18db' },
+    status: { textAlign: 'center', color: '#201e18db' },
+    record: { padding: 16, borderRadius: 12, backgroundColor: '#ad5252', alignItems: 'center' },
+    recordLabel: { color: '#f9f1d8', fontWeight: '600' },
     actions: { flexDirection: 'row', gap: 12 },
-    button: { flex: 1, padding: 14, borderRadius: 12, backgroundColor: '#eee', alignItems: 'center' },
+    button: { flex: 1, padding: 14, borderRadius: 12, backgroundColor: '#201e18db', alignItems: 'center' },
+    buttonLabel: { color: '#f9f1d8' },
     disabled: { opacity: 0.4 },
 });

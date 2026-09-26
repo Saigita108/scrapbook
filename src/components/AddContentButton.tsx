@@ -62,7 +62,7 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
                             <Ionicons
                                 name={item.icon}
                                 size={22}
-                                color="#000"
+                                color="#4a432fc3"
                             />
 
                             <Text style={styles.menuText}>
@@ -83,7 +83,7 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
                     <Ionicons
                         name={menuOpen ? 'close' : 'add'}
                         size={32}
-                        color="white"
+                        color='#201e1869'
                     />
                 </Pressable>
             </GlassView>
@@ -107,26 +107,27 @@ const styles = StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: 'rgba(20, 27, 38, 0.42)',
+        backgroundColor: '#201e1837',
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.55)',
+        borderColor: '#201e1869',
     },
 
     buttonContent: {
+        color: '#a89e8062',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
 
     menu: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#ebe8e0',
         borderRadius: 16,
         padding: 8,
         marginBottom: 10,
         minWidth: 150,
 
-        shadowColor: '#000',
+        shadowColor: '#1f1f1f',
         shadowOffset: {
             width: 0,
             height: 4,
@@ -147,5 +148,6 @@ const styles = StyleSheet.create({
 
     menuText: {
         fontSize: 16,
+        color: "#4a432fc3"
     },
 });
