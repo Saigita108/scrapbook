@@ -1,6 +1,6 @@
-import { StyleSheet, type LayoutChangeEvent } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Animated, { type SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { StyleSheet, type LayoutChangeEvent } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
 export const TRASH_RADIUS = 44;
 const BOTTOM = 20;
@@ -27,13 +27,13 @@ export function useTrashTarget() {
 export default function TrashBin({ target }: { target: TrashTarget }) {
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: withTiming(target.activeId.value === null ? 0 : 1, { duration: 120 }),
-        backgroundColor: withTiming(target.isOver.value ? '#dc2626' : '#252525'),
+        backgroundColor: withTiming(target.isOver.value ? '#dc2626' : '#201e1837'),
         transform: [{ scale: withTiming(target.isOver.value ? 1 : 0.7, { duration: 150 }) }],
     }));
 
     return (
         <Animated.View pointerEvents="none" accessible={false} style={[styles.bin, animatedStyle]}>
-            <Ionicons name="trash-outline" size={30} color="#fff" />
+            <Ionicons name="trash-outline" size={30} color="#201e1869" />
         </Animated.View>
     );
 }
@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
         borderRadius: TRASH_RADIUS,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#201e1869',
         zIndex: 20,
     },
 });

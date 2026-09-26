@@ -17,13 +17,13 @@ const styles = StyleSheet.create({
         minWidth: 120,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(164, 217, 218, 0.7)',
+        backgroundColor: 'rgba(164, 217, 218, 0.5)',
         borderRadius: 14,
     },
     text: {
         fontFamily: 'Unbounded',
         fontSize: 20,
         fontWeight: '700',
-        color: '#f7f5f0',
+        color: '#4a432fc3',
     },
 });

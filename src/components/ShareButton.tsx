@@ -69,7 +69,7 @@ export default function ShareButton({ canvas, date, disabled, onOpen, onCaptureC
         <GlassView style={styles.button} glassEffectStyle="regular" tintColor="rgba(255, 255, 255, 0.2)" isInteractive>
             <Pressable accessibilityRole="button" accessibilityLabel="Share scrapbook as PNG" disabled={disabled || busy}
                 style={({ pressed }) => [styles.buttonContent, pressed && styles.pressed, (disabled || busy) && styles.disabled]} onPress={capture}>
-                {busy ? <ActivityIndicator color="#fff" /> : <Ionicons name="share-outline" size={28} color="#fff" />}
+                {busy ? <ActivityIndicator color="#201e1869" /> : <Ionicons name="share-outline" size={28} color="#201e1869" />}
             </Pressable>
         </GlassView>
         <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
@@ -91,7 +91,7 @@ export default function ShareButton({ canvas, date, disabled, onOpen, onCaptureC
 }
 
 const styles = StyleSheet.create({
-    button: { position: 'absolute', left: 20, bottom: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(20, 27, 38, 0.42)', overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.55)', zIndex: 10 },
+    button: { position: 'absolute', left: 20, bottom: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#201e1837', overflow: 'hidden', borderWidth: 1, borderColor: '#201e1869', zIndex: 10 },
     buttonContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     disabled: { opacity: 0.4 },
     overlay: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.35)' },
