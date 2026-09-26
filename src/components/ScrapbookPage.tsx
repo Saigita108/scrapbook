@@ -1,3 +1,4 @@
+import ShareButton from '@/components/ShareButton';
 import { emptyDay, useScrapbook, type Day } from '@/stores/scrapbook';
 import { saveMedia } from '@/utils/saveMedia';
 import { useEffect, useRef, useState } from 'react';
@@ -23,6 +24,11 @@ type ScrapbookText = {
 };
 
 export default function ScrapbookPage({ date }: { date: string }) {
+    const canvas = useRef<View>(null);
+    const [capturing, setCapturing] = useState(false);
+    const dateStamp = new Date(`${date}T12:00:00`).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'long', year: 'numeric',
+    });
     const day = useScrapbook((state) => state.days[date] ?? emptyDay);
     const update = useScrapbook((state) => state.update);
     const saveTransform = useScrapbook((state) => state.transform);
@@ -254,61 +260,66 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 style={styles.container}
                 onLayout={trash.onCanvasLayout}
             >
-                {imageElements.map((element) => (
-                    <ImageComponent
-                        key={element.id}
-                        id={`image:${element.id}`}
-                        {...transformProps(`image:${element.id}`)}
-                        uri={element.uri}
-                        index={element.index}
-                        trash={trash}
-                        onDelete={() => deleteImage(element.id)}
-                    />
-                ))}
-                {textElements.map((element) => (
-                    <GesturesText
-                        key={element.id}
-                        id={`text:${element.id}`}
-                        {...transformProps(`text:${element.id}`)}
-                        layer={4}
-                        text={element.text}
-                        trash={trash}
-                        onDelete={() => deleteText(element.id)}
-                    />
-                ))}
-                {stickerElements.map((element) => (
-                    <StickerComponent
-                        key={element.id}
-                        id={`sticker:${element.id}`}
-                        {...transformProps(`sticker:${element.id}`)}
-                        layer={element.sticker.id.startsWith('klipy-gifs-') ? 0 : 6}
-                        sticker={element.sticker}
-                        trash={trash}
-                        onDelete={() => deleteSticker(element.id)}
-                    />
-                ))}
-                {audioElements.map((element) => (
-                    <AudioComponent
-                        key={element.id}
-                        id={`audio:${element.id}`}
-                        {...transformProps(`audio:${element.id}`)}
-                        clip={element}
-                        recording={isAddingAudio || isRecordingVideo}
-                        trash={trash}
-                        onDelete={() => deleteAudio(element.id)}
-                    />
-                ))}
-                {videoElements.map((element) => (
-                    <VideoComponent
-                        key={element.id}
-                        id={`video:${element.id}`}
-                        {...transformProps(`video:${element.id}`)}
-                        uri={element.uri}
-                        recording={isAddingAudio || isRecordingVideo}
-                        trash={trash}
-                        onDelete={() => setVideoElements((current) => current.filter((video) => video.id !== element.id))}
-                    />
-                ))}
+                <View ref={canvas} collapsable={false} style={styles.canvas}>
+                    {imageElements.map((element) => (
+                        <ImageComponent
+                            key={element.id}
+                            id={`image:${element.id}`}
+                            {...transformProps(`image:${element.id}`)}
+                            uri={element.uri}
+                            index={element.index}
+                            trash={trash}
+                            onDelete={() => deleteImage(element.id)}
+                        />
+                    ))}
+                    {textElements.map((element) => (
+                        <GesturesText
+                            key={element.id}
+                            id={`text:${element.id}`}
+                            {...transformProps(`text:${element.id}`)}
+                            layer={4}
+                            text={element.text}
+                            trash={trash}
+                            onDelete={() => deleteText(element.id)}
+                        />
+                    ))}
+                    {stickerElements.map((element) => (
+                        <StickerComponent
+                            key={element.id}
+                            id={`sticker:${element.id}`}
+                            {...transformProps(`sticker:${element.id}`)}
+                            layer={element.sticker.id.startsWith('klipy-gifs-') ? 0 : 6}
+                            sticker={element.sticker}
+                            trash={trash}
+                            onDelete={() => deleteSticker(element.id)}
+                        />
+                    ))}
+                    {audioElements.map((element) => (
+                        <AudioComponent
+                            key={element.id}
+                            id={`audio:${element.id}`}
+                            {...transformProps(`audio:${element.id}`)}
+                            clip={element}
+                            recording={isAddingAudio || isRecordingVideo}
+                            trash={trash}
+                            onDelete={() => deleteAudio(element.id)}
+                        />
+                    ))}
+                    {videoElements.map((element) => (
+                        <VideoComponent
+                            key={element.id}
+                            id={`video:${element.id}`}
+                            {...transformProps(`video:${element.id}`)}
+                            uri={element.uri}
+                            recording={isAddingAudio || isRecordingVideo}
+                            trash={trash}
+                            onDelete={() => setVideoElements((current) => current.filter((video) => video.id !== element.id))}
+                        />
+                    ))}
+                    <Text pointerEvents="none" style={[styles.dateStamp, { opacity: capturing ? 1 : 0 }]}>
+                        {dateStamp}
+                    </Text>
+                </View>
                 {isAddingText && (
                     <View style={styles.textInputContainer}>
                         <TextInput
@@ -368,6 +379,9 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
                 <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
                 <ClearDayButton onClearDay={clearDay} onOpen={() => setContentMenuOpen(false)} />
+                <ShareButton canvas={canvas} date={date} onCaptureChange={setCapturing}
+                    disabled={isAddingText || isAddingImage || isAddingSticker || isAddingAudio || isRecordingVideo}
+                    onOpen={() => setContentMenuOpen(false)} />
                 <TrashBin target={trash} />
             </View>
         </KeyboardAvoidingView>
@@ -376,6 +390,13 @@ export default function ScrapbookPage({ date }: { date: string }) {
 }
 
 const styles = StyleSheet.create({
+    dateStamp: {
+        position: 'absolute', bottom: 16, right: 16, zIndex: 8,
+        paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)', color: '#39362b',
+        fontSize: 12, fontWeight: '600',
+    },
+    canvas: { ...StyleSheet.absoluteFill, backgroundColor: '#99895f', overflow: 'hidden' },
     container: {
         flex: 1,
         padding: 20,
