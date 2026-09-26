@@ -1,7 +1,7 @@
 import type { Transform } from '@/stores/scrapbook';
+import { overlapsTrash } from '@/utils/overlapsTrash';
 import { type ReactNode } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
-import { TRASH_RADIUS, type TrashTarget } from './TrashBin';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
     useAnimatedReaction,
@@ -9,7 +9,7 @@ import Animated, {
     useSharedValue,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import { overlapsTrash } from '@/utils/overlapsTrash';
+import { TRASH_RADIUS, type TrashTarget } from './TrashBin';
 
 export type GestureItemProps = {
     layer?: number;
@@ -70,6 +70,7 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
         .averageTouches(true)
         .onBegin(() => {
             trash.activeId.value = id;
+            trash.topId.value = id;
             trash.isOver.value = isOverTrash();
         })
         .onChange((event) => {
@@ -123,7 +124,7 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
     const animatedStyle = useAnimatedStyle(() => {
         return {
             // Raise the active item only within its content layer.
-            zIndex: layer + (trash.activeId.value === id ? 1 : 0),
+            zIndex: trash.topId.value === id ? 100 : layer + (trash.activeId.value === id ? 1 : 0),
             transform: [
                 { translateX: translateX.value },
                 { translateY: translateY.value },

@@ -105,7 +105,9 @@ export default function ScrapbookPage({ date }: { date: string }) {
             if (asset) {
                 const uri = await saveMedia(asset.uri);
                 if (revision !== dayRevision.current) return;
-                setVideoElements((current) => [...current, { id: Date.now().toString(), uri }]);
+                const id = Date.now().toString();
+                setVideoElements((current) => [...current, { id, uri }]);
+                trash.topId.value = `video:${id}`;
             }
         } catch {
             Alert.alert('Could not record video', 'Please try again on a device with a camera.');
@@ -142,6 +144,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
         if (revision !== dayRevision.current) return;
         const element = { ...clip, uri, id: Date.now().toString() };
         setAudioElements((current) => [...current, element]);
+        trash.topId.value = `audio:${element.id}`;
         setIsAddingAudio(false);
     };
 
@@ -152,6 +155,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
     const addSticker = (sticker: Sticker) => {
         const newSticker = { id: Date.now().toString(), sticker };
         setStickerElements((current) => [...current, newSticker]);
+        trash.topId.value = `sticker:${newSticker.id}`;
         setIsAddingSticker(false);
     };
 
@@ -188,6 +192,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
             index: Math.max(-1, ...(useScrapbook.getState().days[date]?.imageElements.map((image) => image.index) ?? [])) + 1,
         };
         setImageElements((current) => [...current, newImage]);
+        trash.topId.value = `image:${newImage.id}`;
         setIsAddingImage(false);
     };
 
@@ -243,8 +248,9 @@ export default function ScrapbookPage({ date }: { date: string }) {
     const handleSubmitText = () => {
         if (!textInput.trim()) return;
 
+        const id = Date.now().toString();
         const newTextElement: ScrapbookText = {
-            id: Date.now().toString(),
+            id,
             text: textInput.trim(),
         };
 
@@ -252,6 +258,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
             ...currentElements,
             newTextElement,
         ]);
+        trash.topId.value = `text:${id}`;
 
         setTextInput('');
         setIsAddingText(false);
@@ -398,7 +405,9 @@ export default function ScrapbookPage({ date }: { date: string }) {
                 />
                 {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
                 {isAddingSteps && <StepCounter date={date} onClose={() => setIsAddingSteps(false)} onAdd={(text, stepSource) => {
-                    setTextElements((current) => [...current, { id: `${Date.now()}-steps`, text, stepSource }]);
+                    const id = `${Date.now()}-steps`;
+                    setTextElements((current) => [...current, { id, text, stepSource }]);
+                    trash.topId.value = `text:${id}`;
                     setIsAddingSteps(false);
                 }} />}
                 {!isAddingText && <Plusbtn onAddSteps={() => {

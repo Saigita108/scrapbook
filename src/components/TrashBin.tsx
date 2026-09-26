@@ -9,6 +9,7 @@ export type TrashTarget = {
     center: SharedValue<{ x: number; y: number } | null>;
     activeId: SharedValue<string | null>;
     isOver: SharedValue<boolean>;
+    topId: SharedValue<string | null>;
 };
 
 // Attach onCanvasLayout to the direct parent of both the items and the bin.
@@ -16,12 +17,13 @@ export function useTrashTarget() {
     const center = useSharedValue<{ x: number; y: number } | null>(null);
     const activeId = useSharedValue<string | null>(null);
     const isOver = useSharedValue(false);
+    const topId = useSharedValue<string | null>(null);
 
     const onCanvasLayout = ({ nativeEvent: { layout } }: LayoutChangeEvent) => {
         center.value = { x: layout.width / 2, y: layout.height - BOTTOM - TRASH_RADIUS };
     };
 
-    return { center, activeId, isOver, onCanvasLayout };
+    return { center, activeId, isOver, topId, onCanvasLayout };
 }
 
 export default function TrashBin({ target }: { target: TrashTarget }) {
