@@ -5,8 +5,12 @@ import type { Sticker } from '@/components/StickerComponent';
 import type { AudioClip } from '@/components/AudioRecorder';
 
 export type Transform = { x: number; y: number; scale: number; rotation: number };
+export type ScrapbookText = { id: string; text: string; stepSource?: 'daily' | 'session' };
+export const isDailyStepText = (item: ScrapbookText, date: string) =>
+    item.stepSource === 'daily' || (!item.stepSource && item.id.endsWith('-steps') && item.text.endsWith(`\nDaily steps · ${date}`));
+
 export type Day = {
-    textElements: { id: string; text: string }[];
+    textElements: ScrapbookText[];
     imageElements: { id: string; uri: string; index: number }[];
     stickerElements: { id: string; sticker: Sticker }[];
     audioElements: (AudioClip & { id: string })[];
@@ -23,6 +27,7 @@ type ScrapbookStore = {
     update: <K extends Collection>(date: string, key: K, action: Day[K] | ((current: Day[K]) => Day[K])) => void;
     transform: (date: string, id: string, value: Transform) => void;
     clear: (date: string) => void;
+    refreshDailySteps: (date: string, steps: number, ids: string[]) => void;
 };
 export const useStorageStatus = create<{ error: string | null }>(() => ({ error: null }));
 // Serialize writes so a slower, older save cannot overwrite a newer edit.
@@ -53,6 +58,19 @@ export const useScrapbook = create<ScrapbookStore>()(persist((set) => ({
         // Ignore a queued gesture callback after deletion or clearing the page.
         if (!day || !day[key]?.some((item) => item.id === itemId)) return state;
         return { days: { ...state.days, [date]: { ...day, transforms: { ...day.transforms, [id]: value } } } };
+    }),
+    refreshDailySteps: (date, steps, ids) => set((state) => {
+        const day = state.days[date];
+        if (!day || !Number.isFinite(steps) || steps < 0) return state;
+        const text = `👣 ${steps.toLocaleString()} steps\nDaily steps · ${date}`;
+        let changed = false;
+        const textElements = day.textElements.map((item) => {
+            if (!ids.includes(item.id) || !isDailyStepText(item, date)) return item;
+            if (item.text === text && item.stepSource === 'daily') return item;
+            changed = true;
+            return { ...item, text, stepSource: 'daily' as const };
+        });
+        return changed ? { days: { ...state.days, [date]: { ...day, textElements } } } : state;
     }),
     clear: (date) => set((state) => {
         const days = { ...state.days };

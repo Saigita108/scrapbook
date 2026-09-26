@@ -8,12 +8,14 @@ type AddContentButtonProps = {
     onAddGif: () => void;
     onAddAudio: () => void;
     onAddVideo: () => void;
+    onAddSteps: () => void;
     menuOpen: boolean;
     onMenuOpenChange: (open: boolean) => void;
 };
 
-export default function AddContentButton({ onAddText, onAddImage, onAddSticker, onAddGif, onAddAudio, onAddVideo, menuOpen, onMenuOpenChange }: AddContentButtonProps) {
+export default function AddContentButton({ onAddText, onAddImage, onAddSticker, onAddGif, onAddAudio, onAddVideo, onAddSteps, menuOpen, onMenuOpenChange }: AddContentButtonProps) {
     const handleMenuPress = (label: string) => {
+        if (label === 'Steps') onAddSteps();
         if (label === 'Text') {
             onAddText();
         }
@@ -42,6 +44,7 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
         { label: 'GIFs', icon: 'film-outline' },
         { label: 'Audio', icon: 'mic-outline' },
         { label: 'Video', icon: 'videocam-outline' },
+        { label: 'Steps', icon: 'footsteps-outline' },
     ] as const;
 
     return (

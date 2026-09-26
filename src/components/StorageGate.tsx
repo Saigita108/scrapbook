@@ -1,9 +1,11 @@
+import useRefreshSteps from '@/hooks/useRefreshSteps';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { useScrapbook, useStorageStatus } from '@/stores/scrapbook';
 
 export default function StorageGate({ children }: { children: ReactNode }) {
     const [ready, setReady] = useState(useScrapbook.persist.hasHydrated());
+    useRefreshSteps(ready);
     const error = useStorageStatus((state) => state.error);
     const load = () => {
         useStorageStatus.setState({ error: null });

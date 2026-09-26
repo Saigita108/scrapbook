@@ -1,7 +1,9 @@
+import StepCounter from '@/components/StepCounter';
+import { useFocusEffect } from 'expo-router';
 import ShareButton from '@/components/ShareButton';
 import { emptyDay, useScrapbook, type Day } from '@/stores/scrapbook';
 import { saveMedia } from '@/utils/saveMedia';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View, Pressable, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { AudioModule } from 'expo-audio';
 import VideoComponent from '@/components/VideoComponent';
@@ -25,6 +27,8 @@ type ScrapbookText = {
 
 export default function ScrapbookPage({ date }: { date: string }) {
     const canvas = useRef<View>(null);
+    const [isAddingSteps, setIsAddingSteps] = useState(false);
+    useFocusEffect(useCallback(() => () => setIsAddingSteps(false), []));
     const [capturing, setCapturing] = useState(false);
     const dateStamp = new Date(`${date}T12:00:00`).toLocaleDateString('en-GB', {
         day: 'numeric', month: 'long', year: 'numeric',
@@ -113,6 +117,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
     const clearDay = () => {
         dayRevision.current += 1;
         useScrapbook.getState().clear(date);
+        setIsAddingSteps(false);
 
         Keyboard.dismiss();
         setTextInput('');
@@ -377,10 +382,21 @@ export default function ScrapbookPage({ date }: { date: string }) {
                     onClose={() => setIsAddingSticker(false)}
                 />
                 {isAddingAudio && <AudioRecorder onSave={saveAudio} onCancel={() => setIsAddingAudio(false)} />}
-                <Plusbtn onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
+                {isAddingSteps && <StepCounter date={date} onClose={() => setIsAddingSteps(false)} onAdd={(text, stepSource) => {
+                    setTextElements((current) => [...current, { id: `${Date.now()}-steps`, text, stepSource }]);
+                    setIsAddingSteps(false);
+                }} />}
+                <Plusbtn onAddSteps={() => {
+                    Keyboard.dismiss();
+                    setIsAddingText(false);
+                    setIsAddingImage(false);
+                    setIsAddingSticker(false);
+                    setIsAddingAudio(false);
+                    setIsAddingSteps(true);
+                }} onAddText={handleAddText} onAddImage={handleAddImage} onAddSticker={() => handleAddSticker()} onAddGif={() => handleAddSticker('gifs')} onAddAudio={handleAddAudio} onAddVideo={handleAddVideo} menuOpen={contentMenuOpen} onMenuOpenChange={setContentMenuOpen} />
                 <ClearDayButton onClearDay={clearDay} onOpen={() => setContentMenuOpen(false)} />
                 <ShareButton canvas={canvas} date={date} onCaptureChange={setCapturing}
-                    disabled={isAddingText || isAddingImage || isAddingSticker || isAddingAudio || isRecordingVideo}
+                    disabled={isAddingSteps || isAddingText || isAddingImage || isAddingSticker || isAddingAudio || isRecordingVideo}
                     onOpen={() => setContentMenuOpen(false)} />
                 <TrashBin target={trash} />
             </View>
