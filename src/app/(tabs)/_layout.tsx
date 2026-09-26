@@ -27,6 +27,7 @@ export default function TabLayout() {
                 name="calendar"
                 options={{
                     title: 'Calendar',
+                    headerShown: false,
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="calendar-outline" size={size} color={color} />
                     ),

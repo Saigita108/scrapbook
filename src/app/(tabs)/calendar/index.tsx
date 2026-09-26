@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { hasContent, useScrapbook } from '@/stores/scrapbook';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import useToday from '@/hooks/useToday';
 import { getDateKey, getMonthDate, getMonthDays, getMonthIndex } from '@/utils/calendar';
@@ -10,6 +10,7 @@ const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function CalendarScreen() {
     const today = useToday();
+    const [pendingDate, setPendingDate] = useState<string | null>(null);
     const days = useScrapbook((state) => state.days);
     const currentMonth = getMonthIndex(today);
     const [browse, setBrowse] = useState({ anchor: currentMonth, month: currentMonth });
@@ -19,7 +20,17 @@ export default function CalendarScreen() {
     const isCurrentMonth = month === currentMonth;
     const changeMonth = (step: number) => setBrowse({ anchor: currentMonth, month: Math.min(month + step, currentMonth) });
 
+    const openDay = (date: string) => {
+        router.push({ pathname: '/calendar/[date]', params: { date } });
+    };
+    const selectDay = (date: string) => {
+        if (date === getDateKey(today)) router.navigate('/(tabs)');
+        else if (hasContent(days[date])) openDay(date);
+        else setPendingDate(date);
+    };
+
     return (
+        <>
         <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
             <View style={styles.panel}>
                 <View style={styles.header}>
@@ -41,7 +52,7 @@ export default function CalendarScreen() {
                         return (
                             <View key={index} style={styles.cell}>
                                 {day !== null && (
-                                    <Pressable accessibilityRole="button" disabled={future} accessibilityState={{ disabled: future }} accessibilityLabel={`${day} ${title}${isToday ? ', today' : ''}${saved ? ', saved scrapbook' : ''}`} onPress={() => isToday ? router.navigate('/(tabs)') : router.push({ pathname: '/day/[date]', params: { date } })} style={[styles.day, isToday && styles.today]}>
+                                    <Pressable accessibilityRole="button" disabled={future} accessibilityState={{ disabled: future }} accessibilityLabel={`${day} ${title}${isToday ? ', today' : ''}${saved ? ', saved scrapbook' : ''}`} onPress={() => selectDay(date)} style={[styles.day, isToday && styles.today]}>
                                         <Text style={[styles.dayText, future && styles.future, isToday && styles.todayText]}>{day}</Text>
                                         {saved && <View style={styles.savedDot} />}
                                     </Pressable>
@@ -63,10 +74,39 @@ export default function CalendarScreen() {
                 )}
             </View>
         </ScrollView>
+        <Modal visible={pendingDate !== null} transparent animationType="fade" onRequestClose={() => setPendingDate(null)}>
+            <View style={styles.overlay}>
+                <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel="Cancel" onPress={() => setPendingDate(null)} />
+                <View style={styles.dialog} accessibilityViewIsModal>
+                    <Text style={styles.dialogTitle}>This day has no memories</Text>
+                    <View style={styles.actions}>
+                        <Pressable accessibilityRole="button" style={styles.action} onPress={() => setPendingDate(null)}>
+                            <Text>Cancel</Text>
+                        </Pressable>
+                        <Pressable accessibilityRole="button" style={[styles.action, styles.addAction]} onPress={() => {
+                            if (!pendingDate) return;
+                            const date = pendingDate;
+                            setPendingDate(null);
+                            openDay(date);
+                        }}>
+                            <Text style={styles.addLabel}>Add</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
+    overlay: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'rgba(0,0,0,0.35)' },
+    dialog: { padding: 24, borderRadius: 20, backgroundColor: '#fff', gap: 20 },
+    dialogTitle: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
+    actions: { flexDirection: 'row', gap: 12 },
+    action: { flex: 1, padding: 14, borderRadius: 12, backgroundColor: '#eee', alignItems: 'center' },
+    addAction: { backgroundColor: '#000' },
+    addLabel: { color: '#fff', fontWeight: '600' },
     screen: { flex: 1, backgroundColor: '#99895f' },
     content: { flexGrow: 1, padding: 20, alignItems: 'center', justifyContent: 'center' },
     panel: { width: '100%', maxWidth: 520, padding: 16, borderRadius: 20, backgroundColor: '#fff' },

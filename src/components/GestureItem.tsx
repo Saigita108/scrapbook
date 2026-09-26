@@ -12,6 +12,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { overlapsTrash } from '@/utils/overlapsTrash';
 
 export type GestureItemProps = {
+    layer?: number;
     transform?: Transform;
     onTransform: (value: Transform) => void;
     children: ReactNode;
@@ -22,7 +23,7 @@ export type GestureItemProps = {
     onTap?: () => void;
 };
 
-export default function GestureItem({ children, id, trash, onDelete, style, onTap, transform, onTransform }: GestureItemProps) {
+export default function GestureItem({ children, id, trash, onDelete, style, onTap, transform, onTransform, layer = 2 }: GestureItemProps) {
     const layoutCenter = useSharedValue({ x: 0, y: 0 });
     const layoutSize = useSharedValue({ width: 0, height: 0 });
     // Position
@@ -121,7 +122,8 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
     // Apply transformations
     const animatedStyle = useAnimatedStyle(() => {
         return {
-            zIndex: trash.activeId.value === id ? 1 : 0,
+            // Raise the active item only within its content layer.
+            zIndex: layer + (trash.activeId.value === id ? 1 : 0),
             transform: [
                 { translateX: translateX.value },
                 { translateY: translateY.value },

@@ -270,6 +270,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                         key={element.id}
                         id={`text:${element.id}`}
                         {...transformProps(`text:${element.id}`)}
+                        layer={4}
                         text={element.text}
                         trash={trash}
                         onDelete={() => deleteText(element.id)}
@@ -280,6 +281,7 @@ export default function ScrapbookPage({ date }: { date: string }) {
                         key={element.id}
                         id={`sticker:${element.id}`}
                         {...transformProps(`sticker:${element.id}`)}
+                        layer={element.sticker.id.startsWith('klipy-gifs-') ? 0 : 6}
                         sticker={element.sticker}
                         trash={trash}
                         onDelete={() => deleteSticker(element.id)}
@@ -393,6 +395,7 @@ const styles = StyleSheet.create({
     },
 
     textInputContainer: {
+        zIndex: 10,
         position: 'absolute',
         left: 20,
         right: 20,

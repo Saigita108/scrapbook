@@ -88,6 +88,7 @@ export default function AddContentButton({ onAddText, onAddImage, onAddSticker, 
 
 const styles = StyleSheet.create({
     wrapper: {
+        zIndex: 10,
         position: 'absolute',
         right: 20,
         bottom: 86,

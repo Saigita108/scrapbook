@@ -68,6 +68,7 @@ export default function ClearDayButton({ onClearDay, onOpen }: ClearDayButtonPro
 
 const styles = StyleSheet.create({
     button: {
+        zIndex: 10,
         position: 'absolute',
         right: 20,
         bottom: 20,
