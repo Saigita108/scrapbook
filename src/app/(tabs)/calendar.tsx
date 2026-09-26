@@ -1,13 +1,16 @@
+import { router } from 'expo-router';
+import { hasContent, useScrapbook } from '@/stores/scrapbook';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import useToday from '@/hooks/useToday';
-import { getMonthDate, getMonthDays, getMonthIndex } from '@/utils/calendar';
+import { getDateKey, getMonthDate, getMonthDays, getMonthIndex } from '@/utils/calendar';
 
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function CalendarScreen() {
     const today = useToday();
+    const days = useScrapbook((state) => state.days);
     const currentMonth = getMonthIndex(today);
     const [browse, setBrowse] = useState({ anchor: currentMonth, month: currentMonth });
     // A new month automatically returns the calendar to the present.
@@ -33,12 +36,15 @@ export default function CalendarScreen() {
                     {getMonthDays(month).map((day, index) => {
                         const isToday = isCurrentMonth && day === today.day;
                         const future = isCurrentMonth && day !== null && day > today.day;
+                        const date = day === null ? '' : getDateKey({ year: Math.floor(month / 12), month: month % 12, day });
+                        const saved = hasContent(days[date]);
                         return (
                             <View key={index} style={styles.cell}>
                                 {day !== null && (
-                                    <View accessible accessibilityLabel={`${day} ${title}${isToday ? ', today' : ''}`} style={[styles.day, isToday && styles.today]}>
+                                    <Pressable accessibilityRole="button" disabled={future} accessibilityState={{ disabled: future }} accessibilityLabel={`${day} ${title}${isToday ? ', today' : ''}${saved ? ', saved scrapbook' : ''}`} onPress={() => isToday ? router.navigate('/(tabs)') : router.push({ pathname: '/day/[date]', params: { date } })} style={[styles.day, isToday && styles.today]}>
                                         <Text style={[styles.dayText, future && styles.future, isToday && styles.todayText]}>{day}</Text>
-                                    </View>
+                                        {saved && <View style={styles.savedDot} />}
+                                    </Pressable>
                                 )}
                             </View>
                         );
@@ -47,6 +53,8 @@ export default function CalendarScreen() {
                 <View style={styles.legend}>
                     <View style={styles.dot} />
                     <Text style={styles.caption}>Today</Text>
+                    <View style={[styles.dot, { backgroundColor: '#39362b' }]} />
+                    <Text style={styles.caption}>Saved scrapbook</Text>
                 </View>
                 {!isCurrentMonth && (
                     <Pressable accessibilityRole="button" onPress={() => setBrowse({ anchor: currentMonth, month: currentMonth })} style={({ pressed }) => [styles.returnButton, pressed && styles.pressed]}>
@@ -71,6 +79,7 @@ const styles = StyleSheet.create({
     weekday: { width: '14.285714%', textAlign: 'center', fontSize: 12, fontWeight: '600', color: '#666', marginBottom: 12 },
     cell: { width: '14.285714%', height: 48, alignItems: 'center', justifyContent: 'center' },
     day: { width: '100%', maxWidth: 40, aspectRatio: 1, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+    savedDot: { position: 'absolute', bottom: 3, width: 5, height: 5, borderRadius: 3, backgroundColor: '#39362b' },
     dayText: { fontSize: 16, color: '#000' },
     future: { color: '#999' },
     today: { backgroundColor: '#F4B8B8' },

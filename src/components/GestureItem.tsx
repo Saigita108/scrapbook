@@ -1,3 +1,4 @@
+import type { Transform } from '@/stores/scrapbook';
 import { type ReactNode } from 'react';
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { TRASH_RADIUS, type TrashTarget } from './TrashBin';
@@ -11,6 +12,8 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { overlapsTrash } from '@/utils/overlapsTrash';
 
 export type GestureItemProps = {
+    transform?: Transform;
+    onTransform: (value: Transform) => void;
     children: ReactNode;
     id: string;
     trash: TrashTarget;
@@ -19,20 +22,25 @@ export type GestureItemProps = {
     onTap?: () => void;
 };
 
-export default function GestureItem({ children, id, trash, onDelete, style, onTap }: GestureItemProps) {
+export default function GestureItem({ children, id, trash, onDelete, style, onTap, transform, onTransform }: GestureItemProps) {
     const layoutCenter = useSharedValue({ x: 0, y: 0 });
     const layoutSize = useSharedValue({ width: 0, height: 0 });
     // Position
-    const translateX = useSharedValue(0);
-    const translateY = useSharedValue(0);
+    const translateX = useSharedValue(transform?.x ?? 0);
+    const translateY = useSharedValue(transform?.y ?? 0);
 
     // Scale
-    const scale = useSharedValue(1);
-    const savedScale = useSharedValue(1);
+    const scale = useSharedValue(transform?.scale ?? 1);
+    const savedScale = useSharedValue(transform?.scale ?? 1);
 
     // Rotation
-    const rotation = useSharedValue(0);
-    const savedRotation = useSharedValue(0);
+    const rotation = useSharedValue(transform?.rotation ?? 0);
+    const savedRotation = useSharedValue(transform?.rotation ?? 0);
+
+    const commit = () => {
+        'worklet';
+        scheduleOnRN(onTransform, { x: translateX.value, y: translateY.value, scale: scale.value, rotation: rotation.value });
+    };
 
     // DRAG
     const isOverTrash = () => {
@@ -73,6 +81,7 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
             }
         })
         .onFinalize(() => {
+            commit();
             if (trash.activeId.value === id) {
                 trash.activeId.value = null;
                 trash.isOver.value = false;
@@ -84,8 +93,9 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
         .onUpdate((event) => {
             scale.value = savedScale.value * event.scale;
         })
-        .onEnd(() => {
+        .onFinalize(() => {
             savedScale.value = scale.value;
+            commit();
         });
 
     // ROTATE
@@ -93,8 +103,9 @@ export default function GestureItem({ children, id, trash, onDelete, style, onTa
         .onUpdate((event) => {
             rotation.value = savedRotation.value + event.rotation;
         })
-        .onEnd(() => {
+        .onFinalize(() => {
             savedRotation.value = rotation.value;
+            commit();
         });
 
     // Allow all three gestures

@@ -23,3 +23,7 @@ export function getMonthDays(month: number): (number | null)[] {
         return day >= 1 && day <= count ? day : null;
     });
 }
+
+export function getDateKey(date: { year: number; month: number; day: number }) {
+    return `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
+}
